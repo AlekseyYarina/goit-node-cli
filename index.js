@@ -18,13 +18,11 @@ program.parse();
 
 const options = program.opts();
 
-// TODO: рефакторити
-// async function invokeAction({ action, id, name, email, phone }) {
 async function invokeAction({ action, id, ...data }) {
   switch (action) {
     case "list":
       const allContacts = await listContacts();
-      console.log(allContacts);
+      console.table(allContacts);
       break;
 
     case "get":
@@ -33,12 +31,13 @@ async function invokeAction({ action, id, ...data }) {
       break;
 
     case "add":
-      const newContact = await addContact();
+      const newContact = await addContact(data);
       console.log(newContact);
       break;
 
     case "remove":
-      // ... id
+      const deleteContact = await removeContact(id);
+      console.log(deleteContact);
       break;
 
     default:

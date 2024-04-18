@@ -4,6 +4,14 @@ import { nanoid } from "nanoid";
 
 const contactsPath = path.resolve("db", "contacts.json");
 
+async function updateContacts(contacts) {
+  try {
+    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  } catch (error) {
+    console.error("Error updating contacts", error);
+  }
+}
+
 export async function listContacts() {
   const data = await fs.readFile(contactsPath, "utf-8");
   return JSON.parse(data);
@@ -21,9 +29,11 @@ export async function removeContact(contactId) {
   if (index === -1) {
     return null;
   }
-  const [result] = contacts.splice(index);
+  const [result] = contacts.splice(index, 1);
+  await updateContacts(contacts);
+  return result;
 }
-// export async function addContact(name, email, phone) {
+
 export async function addContact(data) {
   const contacts = await listContacts();
   const newContact = {
@@ -31,6 +41,6 @@ export async function addContact(data) {
     ...data,
   };
   contacts.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  await updateContacts(contacts);
   return newContact;
 }
